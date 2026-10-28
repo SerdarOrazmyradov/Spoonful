@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A little home for recipes worth making and sharing.">
+  <meta name="theme-color" content="#f5f2e9">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Spoonful - recipes worth sharing</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23d87557'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia' font-size='42' fill='%23fffaf1'%3ES%3C/text%3E%3C/svg%3E">
+  <link id="app-manifest" rel="manifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f5f2e9;
+      --paper-deep: #eeeadf;
+      --ink: #292d25;
+      --muted: #77786d;
+      --olive: #455b43;
+      --terra: #d87557;
+      --line: #dedbcf;
+      --serif: "DM Serif Display", Georgia, serif;
+      --sans: "DM Sans", sans-serif;
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --paper: #191d19;
+      --paper-deep: #222922;
+      --ink: #f1eee4;
+      --muted: #a4a69a;
+      --olive: #c3ceb5;
+      --terra: #ed9879;
+      --line: #353c34;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--paper); }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      transition: background-color .25s ease, color .25s ease;
+    }
+    button, input, textarea, select { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { color: inherit; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    [hidden] { display: none !important; }
+    .shell { width: min(1220px, calc(100% - 64px)); margin-inline: auto; }
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--paper) 92%, transparent);
+      backdrop-filter: blur(16px);
+    }
+    .header-inner { min-height: 72px; display: flex; align-items: center; gap: 36px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -.045em; font-size: 20px; }
+    .brand-mark { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; color: var(--paper); background: var(--terra); }
+    .brand-mark .icon { width: 17px; height: 17px; }
+    .header-nav { display: flex; align-items: center; gap: 28px; margin-left: auto; color: var(--muted); font-size: 13px; }
+    .header-nav a, .saved-toggle { transition: color .2s ease; }
+    .header-nav a:hover, .saved-toggle:hover, .saved-toggle.is-active { color: var(--ink); }
+    .saved-toggle { display: inline-flex; align-items: center; gap: 7px; padding: 8px 0; border: 0; background: transparent; cursor: pointer; }
+    .saved-toggle .icon { width: 16px; height: 16px; }
+    .saved-count { color: var(--terra); font-size: 11px; }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .icon-button {
+      display: inline-grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 50%;
+      color: var(--ink);
+      background: transparent;
+      cursor: pointer;
+      transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+    .icon-button:hover { border-color: var(--line); background: var(--paper-deep); }
+    .icon-button:active { transform: scale(.94); }
+    .icon { width: 18px; height: 18px; stroke-width: 1.8; }
+    .btn { min-height: 42px; height: auto; padding: 10px 17px; gap: 9px; border-radius: 3px; box-shadow: none; font-size: 13px; font-weight: 600; text-transform: none; transition: transform .2s ease, background-color .2s ease; }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { border-color: var(--olive); background: var(--olive); color: var(--paper); }
+    .btn-primary:hover { border-color: color-mix(in srgb, var(--olive) 86%, var(--ink)); background: color-mix(in srgb, var(--olive) 86%, var(--ink)); }
+    .btn-outline { border-color: var(--line); background: transparent; color: var(--ink); }
+    .btn-outline:hover { border-color: var(--olive); background: var(--paper-deep); }
+    .btn .icon { width: 16px; height: 16px; }
+    .hero-copy { padding: clamp(64px, 9vw, 112px) 0 58px; animation: rise-in .8s both; }
+    .hero-copy h1 { margin: 0; font: 400 clamp(76px, 12vw, 148px)/.82 var(--serif); letter-spacing: -.075em; }
+    .hero-copy h1 span { color: var(--terra); }
+    .hero-copy p { max-width: 460px; margin: 25px 0 0; color: var(--muted); font-size: clamp(15px, 1.6vw, 18px); line-height: 1.65; }
+    .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; margin-top: 26px; }
+    .text-link { display: inline-flex; align-items: center; gap: 8px; padding: 9px 0; border: 0; background: transparent; color: var(--olive); font-size: 13px; font-weight: 600; cursor: pointer; }
+    .text-link .icon { width: 16px; height: 16px; transition: transform .2s ease; }
+    .text-link:hover .icon { transform: translateX(3px); }
+    .hero-photo { width: 100%; height: clamp(275px, 38vw, 500px); margin: 0; overflow: hidden; background: var(--paper-deep); }
+    .hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 54%; animation: photo-in 1.2s cubic-bezier(.18,.66,.25,1) both; }
+    .collection { padding-top: clamp(76px, 10vw, 124px); padding-bottom: 112px; scroll-margin-top: 80px; }
+    .collection-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+    .eyebrow { margin: 0 0 12px; color: var(--terra); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+    .collection-heading h2 { margin: 0; font: 400 clamp(38px, 5.4vw, 64px)/.98 var(--serif); letter-spacing: -.045em; }
+    .recipe-count { padding-bottom: 5px; color: var(--muted); font-size: 11px; letter-spacing: .13em; text-transform: uppercase; white-space: nowrap; }
+    .collection-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 26px; margin-top: 42px; border-bottom: 1px solid var(--line); }
+    .category-filters { display: flex; align-items: center; gap: 24px; overflow-x: auto; scrollbar-width: none; }
+    .category-filters::-webkit-scrollbar { display: none; }
+    .category-filter {
+      position: relative;
+      flex: 0 0 auto;
+      padding: 10px 0 14px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: color .2s ease;
+    }
+    .category-filter::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--terra); content: ""; transform: scaleX(0); transform-origin: left; transition: transform .2s ease; }
+    .category-filter:hover, .category-filter.is-active { color: var(--ink); }
+    .category-filter.is-active::after { transform: scaleX(1); }
+    .collection-tools { display: flex; align-items: center; gap: 22px; padding-bottom: 8px; }
+    .search-control { display: flex; width: min(280px, 28vw); align-items: center; gap: 9px; border-bottom: 1px solid var(--line); color: var(--muted); }
+    .search-control .icon { width: 16px; height: 16px; flex: 0 0 auto; }
+    .search-input.input { width: 100%; min-width: 0; height: 34px; min-height: 34px; padding: 0; border: 0; border-radius: 0; outline: none; background: transparent; box-shadow: none; color: var(--ink); font-size: 12px; }
+    .search-input::placeholder { color: var(--muted); opacity: .85; }
+    .search-control:focus-within { border-color: var(--terra); }
+    .recipe-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 30px; row-gap: 56px; margin-top: 34px; }
+    .recipe-item { min-width: 0; opacity: 0; transform: translateY(16px); transition: opacity .55s ease var(--delay, 0ms), transform .55s cubic-bezier(.2,.7,.2,1) var(--delay, 0ms); }
+    .recipe-item.is-visible { opacity: 1; transform: none; }
+    .recipe-photo { display: block; width: 100%; aspect-ratio: 1.34; padding: 0; overflow: hidden; border: 0; background: var(--paper-deep); cursor: pointer; }
+    .recipe-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.2,.7,.2,1); }
+    .recipe-item:hover .recipe-photo img { transform: scale(1.035); }
+    .recipe-info { padding-top: 15px; }
+    .recipe-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+    .recipe-meta span:first-child { color: var(--olive); }
+    .recipe-name-line { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-top: 7px; }
+    .recipe-title { padding: 0; border: 0; background: transparent; color: var(--ink); font: 400 clamp(22px, 2.2vw, 28px)/1.12 var(--serif); letter-spacing: -.02em; text-align: left; cursor: pointer; }
+    .recipe-title:hover { color: var(--terra); }
+    .favorite-button { flex: 0 0 auto; display: grid; width: 34px; height: 34px; place-items: center; margin: -4px -7px 0 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; transition: color .2s ease, background .2s ease, transform .2s ease; }
+    .favorite-button:hover { background: var(--paper-deep); color: var(--terra); }
+    .favorite-button:active { transform: scale(.9); }
+    .favorite-button.is-favorite { color: var(--terra); }
+    .favorite-button.is-favorite .icon { fill: currentColor; }
+    .favorite-button .icon { width: 18px; height: 18px; }
+    .recipe-description { display: -webkit-box; overflow: hidden; margin: 5px 0 11px; color: var(--muted); font-size: 13px; line-height: 1.6; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+    .recipe-tags { display: flex; flex-wrap: wrap; gap: 9px; color: var(--olive); font-size: 10px; letter-spacing: .04em; }
+    .recipe-tag::before { content: "#"; color: var(--terra); }
+    .empty-state { padding: 70px 20px; text-align: center; }
+    .empty-state h3 { margin: 0; font: 400 30px/1.1 var(--serif); }
+    .empty-state p { margin: 10px 0 18px; color: var(--muted); font-size: 13px; }
+    .site-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 24px max(32px, calc((100vw - 1220px) / 2)); border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    .site-footer strong { color: var(--ink); font-weight: 600; }
+    .back-top { display: inline-flex; align-items: center; gap: 7px; color: var(--ink); }
+    .back-top .icon { width: 14px; height: 14px; }
+    dialog.modal { width: 100%; max-width: none; max-height: 100%; padding: 18px; border: 0; background: transparent; }
+    dialog.modal[open] { display: grid; place-items: center; }
+    dialog.modal::backdrop { background: rgb(18 21 18 / 68%); backdrop-filter: blur(4px); }
+    .modal-box { position: relative; width: min(940px, 100%); max-height: min(92dvh, 980px); padding: 0; overflow: auto; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); color: var(--ink); box-shadow: 0 24px 80px rgb(0 0 0 / 20%); }
+    .detail-cover { width: 100%; height: clamp(230px, 39vh, 390px); object-fit: cover; background: var(--paper-deep); }
+    .detail-close { position: absolute; top: 16px; right: 16px; z-index: 1; border-color: rgb(255 255 255 / 58%); background: var(--paper); }
+    .detail-body { padding: clamp(25px, 5vw, 48px); }
+    .detail-heading-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+    .detail-kicker { margin: 0 0 10px; color: var(--terra); font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+    .detail-title { max-width: 700px; margin: 0; font: 400 clamp(36px, 6vw, 58px)/.98 var(--serif); letter-spacing: -.045em; }
+    .detail-description { max-width: 650px; margin: 15px 0 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+    .detail-facts { display: flex; flex-wrap: wrap; gap: 22px; margin-top: 22px; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; }
+    .detail-facts span { display: inline-flex; align-items: center; gap: 7px; }
+    .detail-facts .icon { width: 15px; height: 15px; color: var(--terra); }
+    .detail-columns { display: grid; grid-template-columns: minmax(190px, .82fr) 1.4fr; gap: clamp(30px, 6vw, 72px); margin-top: 39px; padding-top: 28px; border-top: 1px solid var(--line); }
+    .detail-columns h3 { margin: 0 0 17px; font: 400 27px/1 var(--serif); }
+    .detail-columns ul, .detail-columns ol { margin: 0; padding-left: 19px; color: var(--muted); font-size: 13px; line-height: 1.75; }
+    .detail-columns li { padding-left: 4px; margin-bottom: 9px; }
+    .detail-columns ol li::marker { color: var(--terra); font-weight: 700; }
+    .detail-tags { margin-top: 26px; }
+    .form-modal { width: min(690px, 100%); padding: clamp(24px, 5vw, 42px); }
+    .form-close { position: absolute; top: 17px; right: 17px; }
+    .form-modal h2 { margin: 0; font: 400 42px/1 var(--serif); letter-spacing: -.04em; }
+    .form-intro { max-width: 440px; margin: 11px 0 27px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .form-field { display: flex; min-width: 0; flex-direction: column; gap: 7px; margin-bottom: 15px; }
+    .form-field label, .upload-title { color: var(--ink); font-size: 11px; font-weight: 600; }
+    .form-field .input, .form-field .select, .form-field .textarea { width: 100%; border-color: var(--line); border-radius: 2px; background: color-mix(in srgb, var(--paper) 82%, var(--paper-deep)); color: var(--ink); box-shadow: none; font-size: 13px; }
+    .form-field .input, .form-field .select { height: 43px; min-height: 43px; }
+    .form-field .textarea { min-height: 96px; resize: vertical; line-height: 1.55; }
+    .form-field .input:focus, .form-field .select:focus, .form-field .textarea:focus { border-color: var(--terra); outline: none; }
+    .image-upload { margin-top: 2px; }
+    .upload-title { display: block; margin-bottom: 8px; }
+    .upload-label { display: flex; min-height: 106px; align-items: center; justify-content: center; gap: 15px; padding: 12px; border: 1px dashed var(--line); background: color-mix(in srgb, var(--paper) 82%, var(--paper-deep)); color: var(--muted); cursor: pointer; transition: border-color .2s ease, color .2s ease; }
+    .upload-label:hover { border-color: var(--terra); color: var(--ink); }
+    .upload-label .icon { width: 22px; height: 22px; color: var(--terra); }
+    .upload-copy { display: grid; gap: 4px; font-size: 12px; }
+    .upload-copy small { color: var(--muted); font-size: 10px; }
+    .upload-preview { width: 95px; height: 75px; object-fit: cover; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .toast-shell { position: fixed; right: 24px; bottom: 24px; z-index: 50; max-width: min(380px, calc(100vw - 32px)); padding: 13px 18px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font-size: 12px; box-shadow: 0 12px 32px rgb(0 0 0 / 12%); opacity: 0; pointer-events: none; transform: translateY(10px); transition: opacity .25s ease, transform .25s ease; }
+    .toast-shell.is-visible { opacity: 1; transform: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    @keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @keyframes photo-in { from { opacity: .55; transform: scale(1.035); } to { opacity: 1; transform: scale(1); } }
+    @media (max-width: 900px) {
+      .shell { width: min(100% - 44px, 720px); }
+      .header-inner { gap: 20px; }
+      .header-nav { gap: 17px; }
+      .collection-controls { grid-template-columns: 1fr; gap: 8px; }
+      .collection-tools { justify-content: space-between; padding: 7px 0 11px; }
+      .search-control { width: min(340px, 60vw); }
+      .recipe-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 22px; row-gap: 44px; }
+    }
+    @media (max-width: 600px) {
+      .shell { width: calc(100% - 36px); }
+      .header-inner { min-height: 64px; gap: 10px; }
+      .brand { gap: 8px; font-size: 18px; }
+      .brand-mark { width: 30px; height: 30px; }
+      .header-nav { display: none; }
+      .header-actions { gap: 4px; margin-left: auto; }
+      .header-actions .btn { min-height: 38px; padding: 8px 11px; font-size: 12px; }
+      .header-actions .btn .icon { width: 15px; height: 15px; }
+      .hero-copy { padding: 70px 0 43px; }
+      .hero-copy h1 { font-size: clamp(72px, 19vw, 105px); }
+      .hero-copy p { max-width: 355px; margin-top: 18px; font-size: 15px; }
+      .hero-actions { gap: 14px; margin-top: 21px; }
+      .hero-photo { height: 290px; }
+      .collection { padding-top: 75px; padding-bottom: 80px; }
+      .collection-heading { align-items: flex-start; flex-direction: column; gap: 13px; }
+      .recipe-count { padding: 0; }
+      .collection-controls { margin-top: 27px; }
+      .category-filters { gap: 20px; margin-right: -18px; padding-right: 18px; }
+      .category-filter { font-size: 12px; }
+      .collection-tools { gap: 10px; }
+      .search-control { width: auto; flex: 1; }
+      .saved-toggle { gap: 6px; font-size: 12px; }
+      .recipe-grid { column-gap: 15px; row-gap: 34px; margin-top: 25px; }
+      .recipe-photo { aspect-ratio: 1.05; }
+      .recipe-info { padding-top: 11px; }
+      .recipe-meta { font-size: 8px; letter-spacing: .08em; }
+      .recipe-name-line { gap: 4px; }
+      .recipe-title { font-size: clamp(20px, 5.1vw, 26px); }
+      .favorite-button { width: 30px; height: 30px; margin-right: -5px; }
+      .recipe-description { font-size: 11px; line-height: 1.5; }
+      .recipe-tags { gap: 6px; font-size: 9px; }
+      .site-footer { align-items: flex-start; flex-direction: column; padding: 21px 18px; }
+      dialog.modal { padding: 9px; }
+      .modal-box { max-height: 94dvh; }
+      .detail-cover { height: 245px; }
+      .detail-body { padding: 25px 21px; }
+      .detail-columns { grid-template-columns: 1fr; gap: 28px; margin-top: 27px; }
+      .detail-title { font-size: 39px; }
+      .detail-description { font-size: 13px; }
+      .form-modal { padding: 29px 20px 22px; }
+      .form-modal h2 { font-size: 37px; }
+      .form-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .form-field { margin-bottom: 12px; }
+      .form-field .input, .form-field .select, .form-field .textarea { font-size: 12px; }
+      .upload-label { min-height: 92px; }
+      .toast-shell { right: 16px; bottom: 16px; }
+    }
+    @media (max-width: 370px) {
+      .brand { font-size: 16px; }
+      .header-actions .btn { padding: 8px 9px; }
+      .hero-actions .btn { padding-inline: 12px; font-size: 12px; }
+      .recipe-grid { grid-template-columns: 1fr; }
+      .recipe-photo { aspect-ratio: 1.3; }
+      .recipe-title { font-size: 26px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .recipe-item { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="#top" aria-label="Spoonful home">
+        <span class="brand-mark"><i data-lucide="sprout" class="icon"></i></span>
+        <span>Spoonful</span>
+      </a>
+      <nav class="header-nav" aria-label="Main navigation">
+        <a href="#recipes">Browse</a>
+      </nav>
+      <div class="header-actions">
+        <button id="themeToggle" class="icon-button" type="button" aria-label="Switch to dark mode" title="Switch theme">
+          <i data-lucide="moon" class="icon"></i>
+        </button>
+        <button id="installButton" class="btn btn-outline" type="button" hidden>
+          <i data-lucide="download" class="icon"></i><span>Install</span>
+        </button>
+        <button id="addRecipeButton" class="btn btn-primary" type="button">
+          <i data-lucide="plus" class="icon"></i><span>Add recipe</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="shell hero-copy" aria-labelledby="hero-title">
+      <h1 id="hero-title">Spoonful<span>.</span></h1>
+      <p>A little home for the recipes you make, love, and pass around.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#recipes">Find something good <i data-lucide="arrow-right" class="icon"></i></a>
+        <button id="heroAddButton" class="text-link" type="button">Share your recipe <i data-lucide="arrow-up-right" class="icon"></i></button>
+      </div>
+    </section>
+
+    <figure class="hero-photo">
+      <img src="https://images.pexels.com/photos/4262012/pexels-photo-4262012.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=2200" alt="Friends and family gathered around a table for a shared meal" fetchpriority="high">
+    </figure>
+
+    <section id="recipes" class="shell collection" aria-labelledby="collection-title">
+      <div class="collection-heading">
+        <div>
+          <p class="eyebrow">The community cookbook</p>
+          <h2 id="collection-title">What sounds good?</h2>
+        </div>
+        <p id="recipeCount" class="recipe-count" aria-live="polite">Recipes for every kind of day</p>
+      </div>
+      <div class="collection-controls">
+        <div id="categoryFilters" class="category-filters" role="tablist" aria-label="Filter recipes by category"></div>
+        <div class="collection-tools">
+          <label class="search-control">
+            <i data-lucide="search" class="icon" aria-hidden="true"></i>
+            <span class="sr-only">Search recipes</span>
+            <input id="searchInput" class="input search-input" type="search" placeholder="Search dishes or ingredients" autocomplete="off">
+          </label>
+          <button id="savedToggle" class="saved-toggle" type="button" aria-pressed="false">
+            <i data-lucide="heart" class="icon"></i><span>Saved</span><span id="savedCount" class="saved-count">0</span>
+          </button>
+        </div>
+      </div>
+      <div id="recipeGrid" class="recipe-grid" aria-live="polite"></div>
+      <div id="emptyState" class="empty-state" hidden>
+        <h3 id="emptyTitle">Nothing on the table just yet.</h3>
+        <p id="emptyMessage">Try another search, or be the first to add one.</p>
+        <button id="emptyAddButton" class="btn btn-outline" type="button">Add a recipe <i data-lucide="plus" class="icon"></i></button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span><strong>Spoonful.</strong> Made for recipes worth sharing.</span>
+    <span>Your collection is saved on this device.</span>
+    <a class="back-top" href="#top">Back to the top <i data-lucide="arrow-up" class="icon"></i></a>
+  </footer>
+
+  <dialog id="recipeDialog" class="modal" aria-label="Recipe details">
+    <div id="detailContent" class="modal-box"></div>
+    <form method="dialog" class="modal-backdrop"><button aria-label="Close recipe details">close</button></form>
+  </dialog>
+
+  <dialog id="addDialog" class="modal" aria-labelledby="formTitle">
+    <form id="recipeForm" class="modal-box form-modal">
+      <button class="icon-button form-close" type="button" data-close="addDialog" aria-label="Close form"><i data-lucide="x" class="icon"></i></button>
+      <h2 id="formTitle">Pass it around.</h2>
+      <p class="form-intro">Add a favorite to your cookbook. Your recipe and photo stay right here on this device.</p>
+      <div class="form-field">
+        <label for="recipeTitle">Recipe name</label>
+        <input id="recipeTitle" name="title" class="input input-bordered" type="text" maxlength="80" placeholder="The one everyone asks for" required>
+      </div>
+      <div class="form-field">
+        <label for="recipeDescription">A little about it</label>
+        <textarea id="recipeDescription" name="description" class="textarea textarea-bordered" maxlength="220" placeholder="A quick note about what makes it special" required></textarea>
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="recipeCategory">Category</label>
+          <select id="recipeCategory" name="category" class="select select-bordered" required>
+            <option value="Dinner">Dinner</option>
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dessert">Dessert</option>
+            <option value="Snack">Snack</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="recipeTime">Prep time (minutes)</label>
+          <input id="recipeTime" name="time" class="input input-bordered" type="number" min="1" max="999" value="25" required>
+        </div>
+        <div class="form-field">
+          <label for="recipeServings">Servings</label>
+          <input id="recipeServings" name="servings" class="input input-bordered" type="number" min="1" max="50" value="4" required>
+        </div>
+        <div class="form-field">
+          <label for="recipeTags">Tags</label>
+          <input id="recipeTags" name="tags" class="input input-bordered" type="text" maxlength="90" placeholder="quick, vegetarian">
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="recipeIngredients">Ingredients <span style="color:var(--muted);font-weight:400">(one per line)</span></label>
+        <textarea id="recipeIngredients" name="ingredients" class="textarea textarea-bordered" placeholder="250 g pasta&#10;1 lemon, zested" required></textarea>
+      </div>
+      <div class="form-field">
+        <label for="recipeSteps">Method <span style="color:var(--muted);font-weight:400">(one step per line)</span></label>
+        <textarea id="recipeSteps" name="steps" class="textarea textarea-bordered" placeholder="Bring a pot of salted water to a boil.&#10;Cook until just tender." required></textarea>
+      </div>
+      <div class="image-upload">
+        <span class="upload-title">Add a photo <span style="color:var(--muted);font-weight:400">(optional, up to 8 MB)</span></span>
+        <label class="upload-label" for="recipeImage">
+          <img id="uploadPreview" class="upload-preview" alt="Selected recipe preview" hidden>
+          <i id="uploadIcon" data-lucide="image-plus" class="icon" aria-hidden="true"></i>
+          <span class="upload-copy"><span id="uploadText">Choose a photo</span><small id="uploadHint">JPG, PNG, or WEBP</small></span>
+        </label>
+        <input id="recipeImage" class="visually-hidden" type="file" accept="image/*">
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" type="button" data-close="addDialog">Cancel</button>
+        <button class="btn btn-primary" type="submit">Save recipe <i data-lucide="arrow-right" class="icon"></i></button>
+      </div>
+    </form>
+    <form method="dialog" class="modal-backdrop"><button aria-label="Close add recipe dialog">close</button></form>
+  </dialog>
+
+  <div id="toast" class="toast-shell" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    const DB_NAME = "spoonful-cookbook";
+    const DEFAULT_IMAGE = "https://images.pexels.com/photos/18114358/pexels-photo-18114358.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200";
+    const seedRecipes = [
+      {
+        id: "seed-lemon-pasta", title: "Lemony ricotta pasta", category: "Dinner", time: 25, servings: 4,
+        description: "Silky, bright, and ready before the table is set. Our favorite kind of weeknight dinner.",
+        tags: ["Weeknight", "Vegetarian"], imageUrl: "https://images.pexels.com/photos/5507643/pexels-photo-5507643.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+        ingredients: ["350 g rigatoni or shells", "1 lemon, zest and juice", "200 g ricotta", "1/2 cup finely grated parmesan", "2 tbsp olive oil", "A handful of fresh basil", "Sea salt and black pepper"],
+        steps: ["Boil the pasta in well-salted water until just tender. Save a mug of pasta water before draining.", "Stir ricotta, lemon zest, parmesan, olive oil, and a splash of pasta water into a soft sauce.", "Fold the pasta through the sauce, adding lemon juice and more pasta water until glossy.", "Finish with torn basil, black pepper, and a little extra parmesan."]
+      },
+      {
+        id: "seed-chickpea-bowl", title: "Crispy chickpea bowl", category: "Lunch", time: 30, servings: 2,
+        description: "Warm spiced chickpeas, cool herbs, and a lemony dressing with plenty of crunch.",
+        tags: ["Plant-based", "Meal prep"], imageUrl: "https://images.pexels.com/photos/6750382/pexels-photo-6750382.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+        ingredients: ["1 can chickpeas, drained and dried", "1 tsp ground cumin", "1/2 tsp smoked paprika", "2 cups cooked grains", "1 cucumber, chopped", "A handful of parsley and mint", "3 tbsp plain yogurt", "1 lemon"],
+        steps: ["Toss the chickpeas with olive oil, cumin, paprika, salt, and pepper.", "Roast at 220 C for 20 to 25 minutes, shaking the tray once, until crisp.", "Whisk yogurt with lemon juice, a spoonful of water, and a pinch of salt.", "Serve chickpeas over grains with cucumber, herbs, and the lemon yogurt."]
+      },
+      {
+        id: "seed-chocolate-cookies", title: "Brown butter cookies", category: "Dessert", time: 40, servings: 12,
+        description: "Crisp at the edges, soft in the middle, with pools of dark chocolate in every bite.",
+        tags: ["Baking", "Make ahead"], imageUrl: "https://images.pexels.com/photos/14580494/pexels-photo-14580494.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+        ingredients: ["170 g unsalted butter", "180 g brown sugar", "1 egg plus 1 yolk", "1 tsp vanilla", "240 g plain flour", "1/2 tsp baking soda", "180 g dark chocolate, chopped", "Flaky salt"],
+        steps: ["Brown the butter in a pan, swirling until nutty and golden. Cool for 10 minutes.", "Whisk the butter with sugar, egg, yolk, and vanilla until smooth.", "Fold in flour and baking soda, then stir through the chocolate. Chill for 20 minutes.", "Scoop onto a lined tray and bake at 180 C for 10 to 12 minutes. Finish with flaky salt."]
+      },
+      {
+        id: "seed-avocado-toast", title: "Sunday avocado toast", category: "Breakfast", time: 15, servings: 2,
+        description: "Golden sourdough, smashed avocado, soft eggs, and a little chili for a slow morning.",
+        tags: ["Brunch", "Quick"], imageUrl: "https://images.pexels.com/photos/7936728/pexels-photo-7936728.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+        ingredients: ["2 thick slices sourdough", "1 ripe avocado", "2 eggs", "1/2 lemon", "1 tbsp olive oil", "Chili flakes", "Fresh herbs and flaky salt"],
+        steps: ["Toast the sourdough until crisp and deeply golden.", "Mash the avocado with lemon juice, olive oil, and a generous pinch of salt.", "Fry or poach the eggs to your liking.", "Pile avocado onto the toast, add an egg, and finish with chili and herbs."]
+      },
+      {
+        id: "seed-green-salad", title: "Green market salad", category: "Lunch", time: 20, servings: 3,
+        description: "A generous tangle of crisp greens, herbs, cucumber, and the easiest house dressing.",
+        tags: ["Fresh", "Vegetarian"], imageUrl: "https://images.pexels.com/photos/4958944/pexels-photo-4958944.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+        ingredients: ["1 head little gem lettuce", "1 ripe avocado", "1 cucumber", "1 cup sugar snap peas", "A handful each of dill and mint", "2 tbsp olive oil", "1 tbsp white wine vinegar", "1 tsp Dijon mustard"],
+        steps: ["Whisk olive oil, vinegar, Dijon, salt, and pepper in a large serving bowl.", "Roughly tear the lettuce, slice the cucumber, and halve the sugar snap peas.", "Add the vegetables and herbs to the dressing and toss gently.", "Finish with sliced avocado and a final pinch of flaky salt."]
+      },
+      {
+        id: "seed-tomato-beans", title: "Tomato butter beans", category: "Dinner", time: 35, servings: 4,
+        description: "Creamy beans in a rich tomato pan sauce. A piece of toasted bread is non-negotiable.",
+        tags: ["One pot", "Comfort food"], imageUrl: "https://images.pexels.com/photos/18114358/pexels-photo-18114358.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+        ingredients: ["2 tbsp olive oil", "1 small onion, finely sliced", "3 garlic cloves", "2 tbsp tomato paste", "2 cans butter beans, drained", "1 can chopped tomatoes", "1/2 cup vegetable stock", "Parsley and crusty bread"],
+        steps: ["Soften the onion in olive oil over medium heat, then add the garlic and tomato paste.", "Stir in the tomatoes, stock, and butter beans. Season generously.", "Simmer for 20 minutes, stirring now and then, until thick and velvety.", "Scatter with parsley and serve straight from the pan with warm bread."]
+      }
+    ];
+
+    let db;
+    let recipes = [];
+    let activeCategory = "All recipes";
+    let showingFavorites = false;
+    let currentDetailId = null;
+    let toastTimer;
+    let previewUrl = null;
+    let deferredInstallPrompt = null;
+    const objectUrls = new Map();
+    const recipeGrid = document.getElementById("recipeGrid");
+    const categoryFilters = document.getElementById("categoryFilters");
+    const recipeDialog = document.getElementById("recipeDialog");
+    const addDialog = document.getElementById("addDialog");
+    const recipeForm = document.getElementById("recipeForm");
+
+    function openDatabase() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = () => {
+          const store = request.result;
+          if (!store.objectStoreNames.contains("recipes")) store.createObjectStore("recipes", { keyPath: "id" });
+          if (!store.objectStoreNames.contains("settings")) store.createObjectStore("settings", { keyPath: "key" });
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function readAllRecipes() {
+      return new Promise((resolve, reject) => {
+        const request = db.transaction("recipes", "readonly").objectStore("recipes").getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function readSetting(key) {
+      return new Promise((resolve, reject) => {
+        const request = db.transaction("settings", "readonly").objectStore("settings").get(key);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function saveRecord(storeName, record) {
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(storeName, "readwrite");
+        transaction.objectStore(storeName).put(record);
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+      });
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
+      })[character]);
+    }
+
+    function recipeImage(recipe) {
+      if (recipe.imageBlob instanceof Blob) {
+        if (!objectUrls.has(recipe.id)) objectUrls.set(recipe.id, URL.createObjectURL(recipe.imageBlob));
+        return objectUrls.get(recipe.id);
+      }
+      return recipe.imageUrl || DEFAULT_IMAGE;
+    }
+
+    function refreshIcons(root = document) {
+      if (window.lucide) lucide.createIcons({ root, attrs: { class: ["icon"], "stroke-width": 1.8 } });
+    }
+
+    function renderCategories() {
+      const categories = ["All recipes", ...new Set(recipes.map(recipe => recipe.category).filter(Boolean))];
+      if (!categories.includes(activeCategory)) activeCategory = "All recipes";
+      categoryFilters.innerHTML = categories.map(category => `
+        <button class="category-filter ${activeCategory === category ? "is-active" : ""}" type="button" role="tab" aria-selected="${activeCategory === category}" data-category="${escapeHTML(category)}">${escapeHTML(category)}</button>
+      `).join("");
+    }
+
+    function renderRecipes() {
+      renderCategories();
+      const query = document.getElementById("searchInput").value.trim().toLowerCase();
+      const visibleRecipes = recipes.filter(recipe => {
+        const searchable = [recipe.title, recipe.description, recipe.category, ...(recipe.tags || []), ...(recipe.ingredients || [])].join(" ").toLowerCase();
+        return (!showingFavorites || recipe.favorite) &&
+          (activeCategory === "All recipes" || recipe.category === activeCategory) &&
+          (!query || searchable.includes(query));
+      });
+      recipeGrid.innerHTML = visibleRecipes.map((recipe, index) => `
+        <article class="recipe-item" style="--delay:${Math.min(index * 55, 275)}ms">
+          <button class="recipe-photo" type="button" data-open-recipe="${escapeHTML(recipe.id)}" aria-label="View ${escapeHTML(recipe.title)}">
+            <img src="${escapeHTML(recipeImage(recipe))}" alt="${escapeHTML(recipe.title)}" loading="lazy">
+          </button>
+          <div class="recipe-info">
+            <div class="recipe-meta"><span>${escapeHTML(recipe.category)}</span><span>${escapeHTML(recipe.time)} min</span></div>
+            <div class="recipe-name-line">
+              <button class="recipe-title" type="button" data-open-recipe="${escapeHTML(recipe.id)}">${escapeHTML(recipe.title)}</button>
+              <button class="favorite-button ${recipe.favorite ? "is-favorite" : ""}" type="button" data-favorite="${escapeHTML(recipe.id)}" aria-label="${recipe.favorite ? "Remove" : "Add"} ${escapeHTML(recipe.title)} ${recipe.favorite ? "from" : "to"} saved recipes" aria-pressed="${Boolean(recipe.favorite)}"><i data-lucide="heart" class="icon"></i></button>
+            </div>
+            <p class="recipe-description">${escapeHTML(recipe.description)}</p>
+            <div class="recipe-tags">${(recipe.tags || []).slice(0, 3).map(tag => `<span class="recipe-tag">${escapeHTML(tag)}</span>`).join("")}</div>
+          </div>
+        </article>
+      `).join("");
+      document.getElementById("recipeCount").textContent = showingFavorites
+        ? `${visibleRecipes.length} saved ${visibleRecipes.length === 1 ? "recipe" : "recipes"}`
+        : `${visibleRecipes.length} ${visibleRecipes.length === 1 ? "recipe" : "recipes"} to love`;
+      document.getElementById("savedCount").textContent = recipes.filter(recipe => recipe.favorite).length;
+      document.getElementById("savedToggle").classList.toggle("is-active", showingFavorites);
+      document.getElementById("savedToggle").setAttribute("aria-pressed", String(showingFavorites));
+
+      const empty = document.getElementById("emptyState");
+      empty.hidden = visibleRecipes.length > 0;
+      if (!visibleRecipes.length) {
+        const isEmptyCollection = !recipes.length;
+        document.getElementById("emptyTitle").textContent = isEmptyCollection ? "Nothing on the table just yet." : "No recipes found.";
+        document.getElementById("emptyMessage").textContent = isEmptyCollection
+          ? "Be the first to add a favorite to this cookbook."
+          : showingFavorites && !query ? "Save a recipe with the heart to find it here." : "Try a different search or category.";
+        document.getElementById("emptyAddButton").hidden = !isEmptyCollection;
+      }
+      refreshIcons();
+      observeRecipeItems();
+    }
+
+    let revealObserver;
+    function observeRecipeItems() {
+      if (!("IntersectionObserver" in window)) {
+        document.querySelectorAll(".recipe-item").forEach(item => item.classList.add("is-visible"));
+        return;
+      }
+      if (!revealObserver) revealObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.08 });
+      document.querySelectorAll(".recipe-item:not(.is-visible)").forEach(item => revealObserver.observe(item));
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("is-visible");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 2600);
+    }
+
+    function showRecipe(id) {
+      const recipe = recipes.find(item => item.id === id);
+      if (!recipe) return;
+      currentDetailId = id;
+      document.getElementById("detailContent").innerHTML = `
+        <button class="icon-button detail-close" type="button" data-close="recipeDialog" aria-label="Close details"><i data-lucide="x" class="icon"></i></button>
+        <img class="detail-cover" src="${escapeHTML(recipeImage(recipe))}" alt="${escapeHTML(recipe.title)}">
+        <div class="detail-body">
+          <p class="detail-kicker">${escapeHTML(recipe.category)} / ${escapeHTML(recipe.time)} minutes</p>
+          <div class="detail-heading-row">
+            <div><h2 class="detail-title">${escapeHTML(recipe.title)}</h2><p class="detail-description">${escapeHTML(recipe.description)}</p></div>
+            <button class="favorite-button ${recipe.favorite ? "is-favorite" : ""}" type="button" data-favorite="${escapeHTML(recipe.id)}" aria-label="${recipe.favorite ? "Remove from" : "Add to"} saved recipes" aria-pressed="${Boolean(recipe.favorite)}"><i data-lucide="heart" class="icon"></i></button>
+          </div>
+          <div class="detail-facts"><span><i data-lucide="clock-3" class="icon"></i>${escapeHTML(recipe.time)} min</span><span><i data-lucide="users" class="icon"></i>Serves ${escapeHTML(recipe.servings)}</span></div>
+          <div class="detail-columns">
+            <section><h3>Ingredients</h3><ul>${(recipe.ingredients || []).map(item => `<li>${escapeHTML(item)}</li>`).join("")}</ul></section>
+            <section><h3>Method</h3><ol>${(recipe.steps || []).map(step => `<li>${escapeHTML(step)}</li>`).join("")}</ol></section>
+          </div>
+          <div class="recipe-tags detail-tags">${(recipe.tags || []).map(tag => `<span class="recipe-tag">${escapeHTML(tag)}</span>`).join("")}</div>
+        </div>
+      `;
+      refreshIcons(document.getElementById("detailContent"));
+      if (!recipeDialog.open) recipeDialog.showModal();
+    }
+
+    async function toggleFavorite(id) {
+      const recipe = recipes.find(item => item.id === id);
+      if (!recipe) return;
+      recipe.favorite = !recipe.favorite;
+      try {
+        await saveRecord("recipes", recipe);
+        renderRecipes();
+        if (currentDetailId === id && recipeDialog.open) showRecipe(id);
+        showToast(recipe.favorite ? "Saved to your favorites." : "Removed from your favorites.");
+      } catch (error) {
+        recipe.favorite = !recipe.favorite;
+        showToast("Could not save that change. Please try again.");
+      }
+    }
+
+    function openAddDialog() {
+      addDialog.showModal();
+      requestAnimationFrame(() => document.getElementById("recipeTitle").focus());
+    }
+
+    function parseLines(value) {
+      return value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+    }
+
+    function clearUploadPreview() {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = null;
+      const preview = document.getElementById("uploadPreview");
+      preview.hidden = true;
+      preview.removeAttribute("src");
+      document.getElementById("uploadIcon").hidden = false;
+      document.getElementById("uploadText").textContent = "Choose a photo";
+      document.getElementById("uploadHint").textContent = "JPG, PNG, or WEBP";
+    }
+
+    function applyTheme(theme) {
+      const isDark = theme === "dark";
+      document.documentElement.dataset.theme = isDark ? "dark" : "light";
+      document.querySelector('meta[name="theme-color"]').content = isDark ? "#191d19" : "#f5f2e9";
+      document.getElementById("themeToggle").innerHTML = `<i data-lucide="${isDark ? "sun" : "moon"}" class="icon"></i>`;
+      document.getElementById("themeToggle").setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} mode`);
+      refreshIcons(document.getElementById("themeToggle"));
+    }
+
+    async function addRecipe(event) {
+      event.preventDefault();
+      const form = new FormData(recipeForm);
+      const ingredients = parseLines(form.get("ingredients"));
+      const steps = parseLines(form.get("steps"));
+      if (!ingredients.length || !steps.length) {
+        showToast("Add at least one ingredient and one method step.");
+        return;
+      }
+      const imageFile = document.getElementById("recipeImage").files[0] || null;
+      const recipe = {
+        id: crypto.randomUUID ? crypto.randomUUID() : `recipe-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        title: String(form.get("title")).trim(),
+        description: String(form.get("description")).trim(),
+        category: String(form.get("category")),
+        time: Number(form.get("time")),
+        servings: Number(form.get("servings")),
+        tags: String(form.get("tags") || "").split(",").map(tag => tag.trim()).filter(Boolean).slice(0, 6),
+        ingredients,
+        steps,
+        imageBlob: imageFile,
+        imageUrl: imageFile ? "" : DEFAULT_IMAGE,
+        favorite: false,
+        createdAt: Date.now()
+      };
+      try {
+        await saveRecord("recipes", recipe);
+        recipes.unshift(recipe);
+        recipeForm.reset();
+        clearUploadPreview();
+        addDialog.close();
+        activeCategory = "All recipes";
+        showingFavorites = false;
+        document.getElementById("searchInput").value = "";
+        renderRecipes();
+        showToast("Your recipe is in the cookbook.");
+      } catch (error) {
+        showToast("Could not save this recipe. Check your available storage.");
+      }
+    }
+
+    function setupPWA() {
+      const drawIcon = size => {
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = size;
+        const context = canvas.getContext("2d");
+        context.fillStyle = "#d87557";
+        context.fillRect(0, 0, size, size);
+        context.fillStyle = "#fffaf1";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.font = `bold ${Math.round(size * .68)}px Georgia, serif`;
+        context.fillText("S", size / 2, size * .52);
+        return canvas.toDataURL("image/png");
+      };
+      const page = new URL(location.href);
+      page.hash = "";
+      const manifest = {
+        id: page.href,
+        name: "Spoonful - recipes worth sharing",
+        short_name: "Spoonful",
+        description: "A little home for recipes worth making and sharing.",
+        start_url: page.href,
+        scope: new URL(".", page).href,
+        display: "standalone",
+        background_color: "#f5f2e9",
+        theme_color: "#f5f2e9",
+        icons: [
+          { src: drawIcon(192), sizes: "192x192", type: "image/png" },
+          { src: drawIcon(512), sizes: "512x512", type: "image/png" }
+        ]
+      };
+      document.getElementById("app-manifest").href = `data:application/manifest+json,${encodeURIComponent(JSON.stringify(manifest))}`;
+
+      if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1")) {
+        const appUrl = JSON.stringify(page.href);
+        const workerCode = `
+          const CACHE = "spoonful-shell-v1";
+          const APP_URL = ${appUrl};
+          self.addEventListener("install", event => event.waitUntil(
+            caches.open(CACHE).then(cache => cache.add(APP_URL)).then(() => self.skipWaiting())
+          ));
+          self.addEventListener("activate", event => event.waitUntil(self.clients.claim()));
+          self.addEventListener("fetch", event => {
+            if (event.request.mode !== "navigate") return;
+            event.respondWith(fetch(event.request).then(response => {
+              const copy = response.clone();
+              caches.open(CACHE).then(cache => cache.put(APP_URL, copy));
+              return response;
+            }).catch(() => caches.match(APP_URL)));
+          });
+        `;
+        const workerUrl = URL.createObjectURL(new Blob([workerCode], { type: "text/javascript" }));
+        // Current browsers require a same-origin HTTP(S) file for service workers and reject Blob URLs.
+        Promise.resolve().then(() => navigator.serviceWorker.register(workerUrl)).catch(error => {
+          URL.revokeObjectURL(workerUrl);
+          console.info("Service worker registration is unavailable for this Blob URL.", error);
+        });
+      }
+    }
+
+    async function boot() {
+      setupPWA();
+      refreshIcons();
+      try {
+        db = await openDatabase();
+        let storedRecipes = await readAllRecipes();
+        if (!storedRecipes.length) {
+          for (const recipe of seedRecipes) await saveRecord("recipes", { ...recipe, favorite: false, createdAt: Date.now() });
+          storedRecipes = await readAllRecipes();
+        }
+        recipes = storedRecipes.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        const savedTheme = await readSetting("theme");
+        applyTheme(savedTheme?.value || "light");
+        renderRecipes();
+      } catch (error) {
+        console.error("Could not open the recipe database.", error);
+        document.getElementById("emptyTitle").textContent = "Your cookbook could not open.";
+        document.getElementById("emptyMessage").textContent = "Please use a browser with IndexedDB enabled and try again.";
+        document.getElementById("emptyState").hidden = false;
+      }
+    }
+
+    document.getElementById("addRecipeButton").addEventListener("click", openAddDialog);
+    document.getElementById("heroAddButton").addEventListener("click", openAddDialog);
+    document.getElementById("emptyAddButton").addEventListener("click", openAddDialog);
+    document.getElementById("searchInput").addEventListener("input", renderRecipes);
+    document.getElementById("savedToggle").addEventListener("click", () => {
+      showingFavorites = !showingFavorites;
+      renderRecipes();
+      document.getElementById("recipes").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    categoryFilters.addEventListener("click", event => {
+      const button = event.target.closest("[data-category]");
+      if (!button) return;
+      activeCategory = button.dataset.category;
+      showingFavorites = false;
+      renderRecipes();
+    });
+    document.addEventListener("click", event => {
+      const favorite = event.target.closest("[data-favorite]");
+      if (favorite) {
+        event.stopPropagation();
+        toggleFavorite(favorite.dataset.favorite);
+        return;
+      }
+      const openButton = event.target.closest("[data-open-recipe]");
+      if (openButton) {
+        showRecipe(openButton.dataset.openRecipe);
+        return;
+      }
+      const closeButton = event.target.closest("[data-close]");
+      if (closeButton) document.getElementById(closeButton.dataset.close).close();
+    });
+    document.getElementById("themeToggle").addEventListener("click", async () => {
+      const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      applyTheme(theme);
+      try { await saveRecord("settings", { key: "theme", value: theme }); }
+      catch (error) { showToast("Theme changed for this visit, but could not be saved."); }
+    });
+    document.getElementById("recipeImage").addEventListener("change", event => {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/") || file.size > 8 * 1024 * 1024) {
+        event.target.value = "";
+        showToast("Choose an image smaller than 8 MB.");
+        return;
+      }
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = URL.createObjectURL(file);
+      const preview = document.getElementById("uploadPreview");
+      preview.src = previewUrl;
+      preview.hidden = false;
+      document.getElementById("uploadIcon").hidden = true;
+      document.getElementById("uploadText").textContent = file.name;
+      document.getElementById("uploadHint").textContent = "Photo ready to save";
+    });
+    document.getElementById("recipeForm").addEventListener("submit", addRecipe);
+    document.getElementById("addDialog").addEventListener("close", () => {
+      recipeForm.reset();
+      clearUploadPreview();
+    });
+    document.getElementById("installButton").addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      document.getElementById("installButton").hidden = true;
+    });
+    window.addEventListener("beforeinstallprompt", event => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      document.getElementById("installButton").hidden = false;
+    });
+    window.addEventListener("appinstalled", () => {
+      document.getElementById("installButton").hidden = true;
+      showToast("Spoonful is ready on your device.");
+    });
+
+    boot();
+  </script>
+</body>
+</html>
